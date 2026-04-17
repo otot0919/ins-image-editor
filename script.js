@@ -321,9 +321,26 @@ function drawCircle(x, y, radius, targetCtx = ctx) {
   targetCtx.fill();
 }
 
+function drawSquare(x, y, radius, targetCtx = ctx) {
+  const size = radius * 2;
+  targetCtx.fillRect(x - radius, y - radius, size, size);
+}
+
+function drawHeart(x, y, radius, targetCtx = ctx) {
+  const r = radius * 0.9;
+  targetCtx.beginPath();
+  targetCtx.moveTo(x, y + r);
+  targetCtx.bezierCurveTo(x - r * 1.8, y + r * 0.1, x - r * 1.4, y - r * 1.3, x, y - r * 0.3);
+  targetCtx.bezierCurveTo(x + r * 1.4, y - r * 1.3, x + r * 1.8, y + r * 0.1, x, y + r);
+  targetCtx.closePath();
+  targetCtx.fill();
+}
+
 function drawShape(shape, x, y, radius, targetCtx = ctx) {
   if (shape === "star") drawStar(x, y, radius, targetCtx);
   if (shape === "circle") drawCircle(x, y, radius, targetCtx);
+  if (shape === "square") drawSquare(x, y, radius, targetCtx);
+  if (shape === "heart") drawHeart(x, y, radius, targetCtx);
 }
 
 function randomIn(min, max) {
