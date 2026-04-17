@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>ins贴纸照片编辑器(^_−)−☆</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <h1>ins贴纸照片编辑器(^_−)−☆</h1>
+        <p>每次支持上传1-2张图，快速生成星星贴纸～波点贴纸～</p>
+      </header>
+
+      <section class="panel">
+        <h2>步骤 1：上传照片并调整。・°°・(＞_＜)・°°・。</h2>
+        <label class="file-input">
+          <span>选择图片（最多 2 张）</span>
+          <input id="uploadInput" type="file" accept="image/*" multiple />
+        </label>
+        <p class="tip">上传两张图时，自动上下排布并居中，输出 3:4 画布。</p>
+
+        <div class="control-grid">
+          <label>图片缩放
+            <input id="scaleRange" type="range" min="50" max="200" value="100" />
+            <span id="scaleValue">100%</span>
+          </label>
+          <label>横向位置
+            <input id="offsetXRange" type="range" min="-200" max="200" value="0" />
+            <span id="offsetXValue">0</span>
+          </label>
+          <label>纵向位置
+            <input id="offsetYRange" type="range" min="-300" max="300" value="0" />
+            <span id="offsetYValue">0</span>
+          </label>
+        </div>
+
+        <button id="nextBtn" class="btn">下一步：选择颜色和形状(>^ω^&lt;)</button>
+      </section>
+
+      <section id="maskSection" class="panel hidden">
+        <h2>步骤 2：色彩与图案风格☆*:.｡. o(≧▽≦)o .｡.:*☆。</h2>
+        <div class="color-picker-row">
+          <label for="maskColor">色彩</label>
+          <input id="maskColor" type="color" value="#ff5a7a" />
+          <div id="colorPreview" class="color-preview"></div>
+        </div>
+
+        <div class="shape-row">
+          <span>图案形状</span>
+          <div class="shape-options">
+            <button class="shape-btn active" data-shape="star">星星</button>
+            <button class="shape-btn" data-shape="moon">月亮</button>
+            <button class="shape-btn" data-shape="circle">波点</button>
+          </div>
+        </div>
+
+        <div class="control-grid">
+          <label>图案大小
+            <input id="shapeSizeRange" type="range" min="10" max="120" value="40" />
+            <span id="shapeSizeValue">40</span>
+          </label>
+          <label>图案疏密
+            <input id="densityRange" type="range" min="20" max="160" value="90" />
+            <span id="densityValue">90</span>
+          </label>
+        </div>
+
+        <button id="downloadBtn" class="btn primary">一键保存成图</button>
+      </section>
+
+      <section class="preview-wrap">
+        <h2>实时预览</h2>
+        <canvas id="editorCanvas" width="900" height="1200"></canvas>
+      </section>
+
+      <section class="panel">
+        <h2>使用数据看板</h2>
+        <p id="statsHint" class="tip">正在读取统计数据...</p>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">累计用户</div>
+            <div id="totalUsers" class="stat-value">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">生成次数</div>
+            <div id="totalGenerated" class="stat-value">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">保存次数</div>
+            <div id="totalSaved" class="stat-value">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">推荐率</div>
+            <div id="recommendRate" class="stat-value">-</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>用户调研</h2>
+        <p class="tip">愿意推荐给朋友吗？你的反馈会帮助我们优化体验。</p>
+        <div class="survey-row">
+          <button id="recommendBtn" class="shape-btn" type="button">推荐</button>
+          <button id="notRecommendBtn" class="shape-btn" type="button">不推荐</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      window.APP_CONFIG = {
+        supabaseUrl: "https://npldetdezccetclnzirp.supabase.co",
+        supabaseAnonKey:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wbGRldGRlemNjZXRjbG56aXJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTM0OTksImV4cCI6MjA5MTk4OTQ5OX0.0qQOM2lojkUS1p3PEROorBXkZbQhPFqcFkKoJbEKTTc",
+      };
+    </script>
+    <script src="./script.js"></script>
+  </body>
+  </html>
