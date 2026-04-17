@@ -29,6 +29,9 @@ const shapeSizeValue = document.getElementById("shapeSizeValue");
 const densityValue = document.getElementById("densityValue");
 
 const shapeButtons = [...document.querySelectorAll(".shape-btn")];
+const overlayCanvas = document.createElement("canvas");
+const overlayCtx = overlayCanvas.getContext("2d");
+let rafPending = false;
 
 const state = {
   images: [],
@@ -75,6 +78,20 @@ function isOwnerMode() {
 
 function applyStatsVisibility() {
   statsSection.classList.toggle("hidden", !isOwnerMode());
+}
+
+function refreshStatsIfVisible() {
+  if (!isOwnerMode()) return;
+  refreshStats();
+}
+
+function scheduleRender() {
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(() => {
+    rafPending = false;
+    renderCanvas();
+  });
 }
 
 function clamp(value, min, max) {
@@ -326,27 +343,26 @@ function regeneratePatterns() {
 
 function drawPatternOverlay() {
   if (!state.step2Enabled) return;
-  const overlay = document.createElement("canvas");
-  overlay.width = canvas.width;
-  overlay.height = canvas.height;
-  const octx = overlay.getContext("2d");
+  if (overlayCanvas.width !== canvas.width) overlayCanvas.width = canvas.width;
+  if (overlayCanvas.height !== canvas.height) overlayCanvas.height = canvas.height;
+  overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
   // 上半区：图案实心，其他留空
-  octx.fillStyle = state.maskColor;
+  overlayCtx.fillStyle = state.maskColor;
   for (const item of state.patternTop) {
-    drawShape(item.shape, item.x, item.y, item.size * 0.5, octx);
+    drawShape(item.shape, item.x, item.y, item.size * 0.5, overlayCtx);
   }
 
   // 下半区：先整块实心，再挖空图案 -> 叠回主图后空心区域透出原照片
-  octx.fillStyle = state.maskColor;
-  octx.fillRect(0, canvas.height * 0.5, canvas.width, canvas.height * 0.5);
-  octx.globalCompositeOperation = "destination-out";
+  overlayCtx.fillStyle = state.maskColor;
+  overlayCtx.fillRect(0, canvas.height * 0.5, canvas.width, canvas.height * 0.5);
+  overlayCtx.globalCompositeOperation = "destination-out";
   for (const item of state.patternBottom) {
-    drawShape(item.shape, item.x, item.y, item.size * 0.5, octx);
+    drawShape(item.shape, item.x, item.y, item.size * 0.5, overlayCtx);
   }
-  octx.globalCompositeOperation = "source-over";
+  overlayCtx.globalCompositeOperation = "source-over";
 
-  ctx.drawImage(overlay, 0, 0);
+  ctx.drawImage(overlayCanvas, 0, 0);
 }
 
 function renderCanvas() {
@@ -379,7 +395,7 @@ async function handleUploadChange(e) {
 
   try {
     state.images = await Promise.all(files.map((f) => loadImage(f)));
-    renderCanvas();
+    scheduleRender();
   } catch (error) {
     console.error(error);
     alert("图片读取失败，请重试。");
@@ -391,7 +407,7 @@ function bindSlider(slider, view, formatter, onChange) {
     const value = Number(slider.value);
     view.textContent = formatter(value);
     onChange(value);
-    renderCanvas();
+    scheduleRender();
   };
   slider.addEventListener("input", run);
   run();
@@ -450,7 +466,7 @@ function bindCanvasTouchGestures() {
         lastX = x;
         lastY = y;
         syncOffsetControls();
-        renderCanvas();
+        scheduleRender();
       }
 
       if (e.touches.length === 2 && pinchStartDistance > 0) {
@@ -460,7 +476,7 @@ function bindCanvasTouchGestures() {
         const ratio = currentDistance / pinchStartDistance;
         state.scale = clamp(pinchStartScale * ratio, 0.5, 2);
         syncScaleControl();
-        renderCanvas();
+        scheduleRender();
       }
       e.preventDefault();
     },
@@ -484,18 +500,18 @@ nextBtn.addEventListener("click", () => {
   if (!state.hasGeneratedInThisSession) {
     state.hasGeneratedInThisSession = true;
     trackEvent("generated", { imageCount: state.images.length });
-    refreshStats();
+    refreshStatsIfVisible();
   }
   regeneratePatterns();
   maskSection.classList.remove("hidden");
-  renderCanvas();
+  scheduleRender();
   maskSection.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 maskColorInput.addEventListener("input", () => {
   state.maskColor = maskColorInput.value;
   colorPreview.style.background = state.maskColor;
-  renderCanvas();
+  scheduleRender();
 });
 
 shapeButtons.forEach((btn) => {
@@ -504,7 +520,7 @@ shapeButtons.forEach((btn) => {
     shapeButtons.forEach((item) => item.classList.remove("active"));
     btn.classList.add("active");
     regeneratePatterns();
-    renderCanvas();
+    scheduleRender();
   });
 });
 
@@ -514,7 +530,7 @@ downloadBtn.addEventListener("click", () => {
   a.href = canvas.toDataURL("image/png");
   a.click();
   trackEvent("saved", { imageCount: state.images.length });
-  refreshStats();
+  refreshStatsIfVisible();
 });
 
 function setSurveyChoice(choice) {
@@ -539,7 +555,7 @@ async function submitSurvey(choice) {
     ]);
     alert("感谢反馈，已收到！");
     setSurveyChoice(null);
-    refreshStats();
+    refreshStatsIfVisible();
   } catch (error) {
     console.error(error);
     alert("提交失败，请稍后再试。");
@@ -573,7 +589,7 @@ bindSlider(densityRange, densityValue, (v) => `${v}`, (v) => {
 
 colorPreview.style.background = state.maskColor;
 bindCanvasTouchGestures();
-renderCanvas();
+scheduleRender();
 syncOwnerModeFromUrl();
 applyStatsVisibility();
-ensureUserTracked().then(refreshStats);
+ensureUserTracked().then(refreshStatsIfVisible);
