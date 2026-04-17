@@ -366,10 +366,15 @@ function drawPatternOverlay() {
     overlayCtx.globalCompositeOperation = "source-over";
   };
 
-  const topHollow = state.swapMaskHalves;
-  const bottomHollow = !state.swapMaskHalves;
-  drawHalfMask(state.patternTop, 0, canvas.height * 0.5, topHollow);
-  drawHalfMask(state.patternBottom, canvas.height * 0.5, canvas.height * 0.5, bottomHollow);
+  if (!state.swapMaskHalves) {
+    // 默认：上实下镂
+    drawHalfMask(state.patternTop, 0, canvas.height * 0.5, false);
+    drawHalfMask(state.patternBottom, canvas.height * 0.5, canvas.height * 0.5, true);
+  } else {
+    // 对调：上镂下实（直接对调原上下样式）
+    drawHalfMask(state.patternBottom, 0, canvas.height * 0.5, true);
+    drawHalfMask(state.patternTop, canvas.height * 0.5, canvas.height * 0.5, false);
+  }
   overlayCtx.globalCompositeOperation = "source-over";
 
   ctx.drawImage(overlayCanvas, 0, 0);
