@@ -4,6 +4,7 @@ const ctx = canvas.getContext("2d");
 const uploadInput = document.getElementById("uploadInput");
 const nextBtn = document.getElementById("nextBtn");
 const maskSection = document.getElementById("maskSection");
+const statsSection = document.getElementById("statsSection");
 const downloadBtn = document.getElementById("downloadBtn");
 const statsHint = document.getElementById("statsHint");
 const totalUsersEl = document.getElementById("totalUsers");
@@ -52,6 +53,28 @@ let visitorId = localStorage.getItem(visitorIdKey);
 if (!visitorId) {
   visitorId = crypto.randomUUID();
   localStorage.setItem(visitorIdKey, visitorId);
+}
+
+const ownerModeKey = "ins_editor_owner_mode";
+const ownerCode = "otot0919";
+
+function syncOwnerModeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const ownerParam = params.get("owner");
+  if (ownerParam === ownerCode) {
+    localStorage.setItem(ownerModeKey, "1");
+  }
+  if (ownerParam === "off") {
+    localStorage.removeItem(ownerModeKey);
+  }
+}
+
+function isOwnerMode() {
+  return localStorage.getItem(ownerModeKey) === "1";
+}
+
+function applyStatsVisibility() {
+  statsSection.classList.toggle("hidden", !isOwnerMode());
 }
 
 function clamp(value, min, max) {
@@ -551,4 +574,6 @@ bindSlider(densityRange, densityValue, (v) => `${v}`, (v) => {
 colorPreview.style.background = state.maskColor;
 bindCanvasTouchGestures();
 renderCanvas();
+syncOwnerModeFromUrl();
+applyStatsVisibility();
 ensureUserTracked().then(refreshStats);
