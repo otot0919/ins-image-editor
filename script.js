@@ -34,7 +34,7 @@ const offsetYValue = document.getElementById("offsetYValue");
 const shapeSizeValue = document.getElementById("shapeSizeValue");
 const densityValue = document.getElementById("densityValue");
 
-const shapeButtons = [...document.querySelectorAll(".shape-options .shape-btn")];
+const shapeButtons = [...document.querySelectorAll(".shape-options .shape-btn[data-shape]")];
 const overlayCanvas = document.createElement("canvas");
 const overlayCtx = overlayCanvas.getContext("2d");
 let rafPending = false;
