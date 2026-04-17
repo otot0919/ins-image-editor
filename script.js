@@ -394,7 +394,9 @@ function renderCanvas() {
   }
 
   if (state.images.length === 1) {
-    drawCoverImage(state.images[0], 0, 0, canvas.width, canvas.height);
+    const h = canvas.height / 2;
+    drawCoverImage(state.images[0], 0, 0, canvas.width, h);
+    drawCoverImage(state.images[0], 0, h, canvas.width, h);
   } else {
     const h = canvas.height / 2;
     drawCoverImage(state.images[0], 0, 0, canvas.width, h);
@@ -520,7 +522,7 @@ shapeButtons.forEach((btn) => {
 
 swapMaskBtn.addEventListener("click", () => {
   state.swapMaskHalves = !state.swapMaskHalves;
-  swapMaskBtn.textContent = "↕️ 上下";
+  swapMaskBtn.textContent = "↕️";
   scheduleRender();
 });
 

@@ -19,7 +19,7 @@
           <span>选择图片（最多 2 张）</span>
           <input id="uploadInput" type="file" accept="image/*" multiple />
         </label>
-        <p class="tip">上传两张图时，自动上下排布并居中，输出 3:4 画布。</p>
+        <p class="tip">上传一张图会自动复制为上下两张；上传两张图则自动上下排布并居中，输出 3:4 画布。</p>
 
         <div class="control-grid">
           <label>图片缩放
@@ -57,7 +57,7 @@
 
         <div class="shape-row">
           <span>↕️ 上下</span>
-          <button id="swapMaskBtn" class="shape-btn" type="button">↕️ 上下</button>
+          <button id="swapMaskBtn" class="shape-btn" type="button" aria-label="上下切换">↕️</button>
         </div>
 
         <div class="control-grid">
