@@ -83,7 +83,19 @@ function applyStatsVisibility() {
 }
 
 function syncSwapButtonLabel() {
-  swapMaskBtn.textContent = "↕️";
+  if (swapMaskBtn.textContent !== "↕️") {
+    swapMaskBtn.textContent = "↕️";
+  }
+}
+
+function enforceSwapButtonLabel() {
+  syncSwapButtonLabel();
+  const observer = new MutationObserver(() => syncSwapButtonLabel());
+  observer.observe(swapMaskBtn, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
 }
 
 function refreshStatsIfVisible() {
@@ -534,6 +546,7 @@ shapeButtons.forEach((btn) => {
 swapMaskBtn.addEventListener("click", () => {
   state.swapMaskHalves = !state.swapMaskHalves;
   syncSwapButtonLabel();
+  requestAnimationFrame(syncSwapButtonLabel);
   scheduleRender();
 });
 
@@ -602,7 +615,7 @@ bindSlider(densityRange, densityValue, (v) => `${v}`, (v) => {
 
 colorPreview.style.background = state.maskColor;
 bindCanvasTouchGestures();
-syncSwapButtonLabel();
+enforceSwapButtonLabel();
 scheduleRender();
 syncOwnerModeFromUrl();
 applyStatsVisibility();
