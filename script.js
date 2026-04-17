@@ -82,6 +82,10 @@ function applyStatsVisibility() {
   statsSection.classList.toggle("hidden", !isOwnerMode());
 }
 
+function syncSwapButtonLabel() {
+  swapMaskBtn.textContent = "↕️";
+}
+
 function refreshStatsIfVisible() {
   if (!isOwnerMode()) return;
   refreshStats();
@@ -522,7 +526,7 @@ shapeButtons.forEach((btn) => {
 
 swapMaskBtn.addEventListener("click", () => {
   state.swapMaskHalves = !state.swapMaskHalves;
-  swapMaskBtn.textContent = "↕️";
+  syncSwapButtonLabel();
   scheduleRender();
 });
 
@@ -591,6 +595,7 @@ bindSlider(densityRange, densityValue, (v) => `${v}`, (v) => {
 
 colorPreview.style.background = state.maskColor;
 bindCanvasTouchGestures();
+syncSwapButtonLabel();
 scheduleRender();
 syncOwnerModeFromUrl();
 applyStatsVisibility();
