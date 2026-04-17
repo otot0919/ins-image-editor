@@ -243,18 +243,9 @@ function drawCircle(x, y, radius, targetCtx = ctx) {
   targetCtx.fill();
 }
 
-function drawMoon(x, y, radius, targetCtx = ctx) {
-  targetCtx.beginPath();
-  targetCtx.arc(x, y, radius, Math.PI * 0.1, Math.PI * 1.9, false);
-  targetCtx.arc(x + radius * 0.35, y - radius * 0.1, radius * 0.88, Math.PI * 1.85, Math.PI * 0.15, true);
-  targetCtx.closePath();
-  targetCtx.fill();
-}
-
 function drawShape(shape, x, y, radius, targetCtx = ctx) {
   if (shape === "star") drawStar(x, y, radius, targetCtx);
   if (shape === "circle") drawCircle(x, y, radius, targetCtx);
-  if (shape === "moon") drawMoon(x, y, radius, targetCtx);
 }
 
 function randomIn(min, max) {
